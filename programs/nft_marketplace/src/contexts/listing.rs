@@ -23,7 +23,7 @@ pub struct List<'info> {
         associated_token::authority = maker,
         associated_token::mint = maker_mint,
     )]
-    maker_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+    maker_ata: Box<InterfaceAccount<'info, TokenAccount>>, //stores the maker on the heap
     #[account(
         init_if_needed,
         payer = maker,
@@ -34,7 +34,7 @@ pub struct List<'info> {
     #[account(
         init,
         payer = maker,
-        space = Listing::INIT_SPACE,
+        space = 8 + Listing::INIT_SPACE,
         seeds = [marketplace.key().as_ref(), maker_mint.key().as_ref()],
         bump
     )]
@@ -69,6 +69,7 @@ pub struct List<'info> {
 }
 
 impl<'info> List<'info> {
+    //create a listing
     pub fn create_listing(&mut self, price: u64, bumps: &ListBumps) -> Result<()> {
         self.listing.set_inner(Listing {
             maker: self.maker.key(),
@@ -80,6 +81,7 @@ impl<'info> List<'info> {
         Ok(())
     }
 
+    //deposit an nft
     pub fn deposit_nft(&mut self) -> Result<()> {
         let accounts = TransferChecked {
             from: self.maker_ata.to_account_info(),
@@ -88,6 +90,7 @@ impl<'info> List<'info> {
             mint: self.maker_mint.to_account_info(),
         };
 
+        //create a Cpi context
         let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), accounts);
 
         transfer_checked(cpi_ctx, 1, self.maker_mint.decimals)

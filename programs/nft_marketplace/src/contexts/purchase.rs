@@ -115,7 +115,7 @@ impl<'info> Purchase<'info> {
             destination: self.maker.to_account_info(),
             authority: self.listing.to_account_info(),
         };
-
+        //Sign with the pda
         let cpi_ctx = CpiContext::new_with_signer(
             self.token_program.to_account_info(),
             accounts,

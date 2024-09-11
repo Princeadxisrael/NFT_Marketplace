@@ -51,6 +51,7 @@ impl<'info> Delist<'info> {
             mint: self.maker_mint.to_account_info(),
         };
 
+        //signing with our pda usinf 'new_with_signer'
         let cpi_ctx = CpiContext::new_with_signer(
             self.token_program.to_account_info(),
             accounts,
